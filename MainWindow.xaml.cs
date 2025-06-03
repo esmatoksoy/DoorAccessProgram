@@ -74,6 +74,7 @@ namespace WpfApp1
                 var dt = new DataTable();
                 adapter.Fill(dt);
                 dgRecords.ItemsSource = dt.DefaultView;
+
             }
         }
 
