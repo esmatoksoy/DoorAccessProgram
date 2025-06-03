@@ -34,6 +34,11 @@ namespace WpfApp1
                 MessageBox.Show("Please fill in all fields.");
                 return;
             }
+            if (!IsNameValid(txtPersonName.Text))
+            {
+                MessageBox.Show("Name should be a string");
+                return;
+            }
 
             try
             {
@@ -194,7 +199,16 @@ namespace WpfApp1
             }
         }
 
-
+        private bool IsNameValid(string name)
+        {
+            // Only letters and spaces allowed
+            foreach (char c in name)
+            {
+                if (!char.IsLetter(c) && c != ' ')
+                    return false;
+            }
+            return true;
+        }
 
         private void ClearFields()
              {
