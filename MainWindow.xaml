@@ -1,33 +1,55 @@
 ﻿<Window x:Class="WpfApp1.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Door Access Control" Height="450" Width="800">
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="70*"/>
-            <RowDefinition Height="137*"/>
-        </Grid.RowDefinitions>
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Width="250" Grid.RowSpan="2">
-            <TextBlock Text="Person ID:" Margin="0,10,0,0"/>
-            <TextBox x:Name="txtPersonID" Margin="0,0,0,5" TextChanged="txtPersonID_TextChanged"/>
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       Title="Door Access Control" Height="450" Width="800"
+       Background="#E3F2FD">
+   <Window.Resources>
+       <Style TargetType="Button">
+           <Setter Property="Background" Value="LightBlue" />
+           <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#6EC6FF"/> <!-- Fixed missing attribute value -->
+           <Setter Property="BorderThickness" Value="4"/>
+           <Setter Property="FontWeight" Value="Bold"/>
+           <Setter Property="Padding" Value="5,8"/>
+           <Setter Property="Template">
+               <Setter.Value>
+                   <ControlTemplate TargetType="Button">
+                       <Border Background="{TemplateBinding Background}"
+                               BorderBrush="{TemplateBinding BorderBrush}"
+                               BorderThickness="{TemplateBinding BorderThickness}"
+                               CornerRadius="5"
+                               SnapsToDevicePixels="True">
+                           <ContentPresenter HorizontalAlignment="Center"
+                                             VerticalAlignment="Center"
+                                             RecognizesAccessKey="True"/>
+                       </Border>
+                   </ControlTemplate>
+               </Setter.Value>
+           </Setter>
+       </Style>
+   </Window.Resources>
+    <Grid Margin="10" Background="#E3F2FD">
+       <Grid.RowDefinitions>
+           <RowDefinition Height="70*"/>
+           <RowDefinition Height="137*"/>
+       </Grid.RowDefinitions>
 
-            <TextBlock Text="Person Name:"/>
-            <TextBox x:Name="txtPersonName" Margin="0,0,0,5"/>
-
-            <TextBlock Text="Access Time:"/>
-            <DatePicker x:Name="dpAccessTime" Margin="0,0,0,15"/>
-
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                <Button Content="ADD" Width="55" Margin="0,0,5,0" Click="Button_Click_Add"/>
-                <Button Content="UPDATE" Width="65" Margin="0,0,5,0" Click="Button_Click_Update"/>
-                <Button Content="DELETE" Width="60" Margin="0,0,5,0" Click="Button_Click_Delete"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                <Button Content="LIST ALL" Width="80" Margin="0,0,5,0" Click="Button_Click_List"/>
-                <Button Content="SEARCH" Width="70" Click="Button_Click_Search"/>
-            </StackPanel>
-        </StackPanel>
-        <DataGrid x:Name="dgRecords" Margin="270,0,0,0" AutoGenerateColumns="True"
-                  IsReadOnly="True" SelectionMode="Single" SelectionChanged="dgRecords_SelectionChanged" Grid.RowSpan="2"/>
-    </Grid>
+       <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="0" Width="150" Grid.RowSpan="2">
+            <TextBlock Text="Person ID:" Margin="0,20,0,0" FontSize="18" FontWeight="SemiBold" FontFamily="Source Sans Pro"/>
+           <TextBox x:Name="txtPersonID" Margin="0,0,0,5" TextChanged="txtPersonID_TextChanged"/>
+            <TextBlock Text="Person Name:" FontSize="18" FontWeight="SemiBold"/>
+           <TextBox x:Name="txtPersonName" Margin="0,0,0,5"/>
+            <TextBlock Text="Access Time:" FontSize="18" FontWeight="SemiBold" FontFamily="Source Sans Pro"/>
+           <DatePicker x:Name="dpAccessTime" Margin="0,0,0,15"/>
+           <StackPanel Orientation="Vertical" Margin="0,20,0,0" VerticalAlignment="Top" Width="120">
+               <Button Content="ADD" Margin="0,0,0,10" Click="Button_Click_Add"/>
+               <Button Content="UPDATE" Margin="0,0,0,10" Click="Button_Click_Update"/>
+               <Button Content="DELETE" Margin="0,0,0,10" Click="Button_Click_Delete"/>
+               <Button Content="LIST ALL" Margin="0,0,0,10" Click="Button_Click_List"/>
+               <Button Content="SEARCH" Click="Button_Click_Search"/>
+           </StackPanel>
+       </StackPanel>
+       <DataGrid x:Name="dgRecords" Margin="270,0,0,0" AutoGenerateColumns="True"
+                 IsReadOnly="True" SelectionMode="Single" SelectionChanged="dgRecords_SelectionChanged" Grid.RowSpan="2"/>
+   </Grid>
 </Window>
