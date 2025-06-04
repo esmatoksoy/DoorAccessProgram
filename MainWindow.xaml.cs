@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Data;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Microsoft.Data.SqlClient;
 
 namespace WpfApp1
@@ -15,6 +17,45 @@ namespace WpfApp1
         {
             InitializeComponent();
             ListAll();
+        }
+        private static readonly Regex OnlyLetters = new Regex("^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$");
+
+        private void txtPersonName_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !OnlyLetters.IsMatch(e.Text);
+        }
+
+        private void txtPersonName_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string text = (string)e.DataObject.GetData(typeof(string));
+                if (!OnlyLetters.IsMatch(text))
+                    e.CancelCommand();
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
+        private static readonly Regex OnlyDigits = new Regex("^[0-9]+$");
+        private void txtPersonID_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !OnlyDigits.IsMatch(e.Text);
+        }
+
+        private void txtPersonID_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string text = (string)e.DataObject.GetData(typeof(string));
+                if (!OnlyDigits.IsMatch(text))
+                    e.CancelCommand();
+            }
+            else
+            {
+                e.CancelCommand();
+            }
         }
         private void dgRecords_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -154,7 +195,8 @@ namespace WpfApp1
                      }
                      MessageBox.Show("Record deleted!");
                      ClearFields();
-                 }
+                     ListAll();
+            }
              }
 
         private void Button_Click_Update(object sender, RoutedEventArgs e)
