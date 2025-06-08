@@ -304,15 +304,15 @@ namespace WpfApp1
             }
             return true;
         }
-        private void Button_Click_Graphics(object sender, RoutedEventArgs e)
-        {
-            // Example: pass all records from the DataGrid's DataSource
-            var dataView = dgRecords.ItemsSource as DataView;
-            DataTable table = dataView?.Table;
+private void Button_Click_Graphics(object sender, RoutedEventArgs e)
+{
+    // Example: pass all records from the DataGrid's DataSource
+    var dataView = dgRecords.ItemsSource as DataView;
+    DataTable table = dataView?.Table;
 
-            var graphicsWindow = new GraphicsWindow(table);
-            graphicsWindow.Show();
-        }
+    var graphicsWindow = new GraphicsWindow(table);
+    graphicsWindow.Show();
+}
         private void ClearFields()
              {
                  txtAccessOnlyTime.Text = "";
