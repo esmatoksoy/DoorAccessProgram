@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Data.SqlClient;
 
+
 namespace WpfApp1
 {
     public partial class MainWindow : Window
@@ -16,6 +17,13 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
+            dgRecords.AutoGeneratingColumn += (s, e) =>
+            {
+                if (e.PropertyName == "AccessTime" && e.Column is DataGridTextColumn col)
+                {
+                    (col.Binding as System.Windows.Data.Binding).StringFormat = "yyyy-MM-dd";
+                }
+            };
             ListAll();
         }
         private static readonly Regex OnlyLetters = new Regex("^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$");
@@ -38,6 +46,27 @@ namespace WpfApp1
                 e.CancelCommand();
             }
         }
+        private void txtAccessOnlyTime_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string text = (string)e.DataObject.GetData(typeof(string));
+                if (!IsValidTimeFormat(text))
+                {
+                    e.CancelCommand();
+                }
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
+
+        // Helper method to validate time format (hh:mm)
+        private bool IsValidTimeFormat(string text)
+        {
+            return System.Text.RegularExpressions.Regex.IsMatch(text, @"^\d{2}:\d{2}$");
+        }
         private static readonly Regex OnlyDigits = new Regex("^[0-9]+$");
         private void txtPersonID_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
@@ -57,14 +86,28 @@ namespace WpfApp1
                 e.CancelCommand();
             }
         }
+
+        private bool TryGetAccessOnlyTime(out TimeSpan accessOnlyTime)
+        {
+            accessOnlyTime = TimeSpan.Zero;
+            if (string.IsNullOrWhiteSpace(txtAccessOnlyTime.Text))
+                return false;
+            return TimeSpan.TryParse(txtAccessOnlyTime.Text, out accessOnlyTime);
+        }
+
         private void dgRecords_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dgRecords.SelectedItem is DataRowView row)
+            if (dgRecords.SelectedItem is DataRowView row) // Ensure 'row' is assigned here
             {
                 selectedRecordId = Convert.ToInt32(row["RecordID"]);
                 txtPersonID.Text = row["PersonID"].ToString();
                 txtPersonName.Text = row["PersonName"].ToString();
                 dpAccessTime.SelectedDate = Convert.ToDateTime(row["AccessTime"]);
+
+                if (row["AccessOnlyTime"] != DBNull.Value) // 'row' is guaranteed to be assigned
+                    txtAccessOnlyTime.Text = TimeSpan.Parse(row["AccessOnlyTime"].ToString()).ToString(@"hh\:mm");
+                else
+                    txtAccessOnlyTime.Text = "";
             }
         }
 
@@ -80,7 +123,11 @@ namespace WpfApp1
                 MessageBox.Show("Name should be a string");
                 return;
             }
-
+            if (!TryGetAccessOnlyTime(out TimeSpan accessOnlyTime))
+            {
+                MessageBox.Show("Please enter a valid Access Only Time (HH:mm).");
+                return;
+            }
             try
             {
                 // Random ID oluştur
@@ -90,9 +137,10 @@ namespace WpfApp1
                 // Bağlantı başlat
                 using (var conn = new SqlConnection(connectionString))
                 {
-                    conn.Open(); 
+                    conn.Open();
 
-                    var cmd = new SqlCommand("INSERT INTO ACCESSRECORD (RecordID, PersonID, PersonName, AccessTime) VALUES (@rid, @pid, @pname, @atime)", conn);
+                    var cmd = new SqlCommand("INSERT INTO ACCESSRECORD (RecordID, PersonID, PersonName, AccessTime, AccessOnlyTime) VALUES (@rid, @pid, @pname, @atime, @aotime)", conn);
+                    cmd.Parameters.AddWithValue("@aotime", accessOnlyTime);
                     cmd.Parameters.AddWithValue("@rid", recordId);
                     cmd.Parameters.AddWithValue("@pid", txtPersonID.Text);
                     cmd.Parameters.AddWithValue("@pname", txtPersonName.Text);
@@ -212,13 +260,18 @@ namespace WpfApp1
                 MessageBox.Show("Please fill in all fields.");
                 return;
             }
-
+            if (!TryGetAccessOnlyTime(out TimeSpan accessOnlyTime))
+            {
+                MessageBox.Show("Please enter a valid Access Only Time (HH:mm).");
+                return;
+            }
             try
             {
                 using (var conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    var cmd = new SqlCommand("UPDATE ACCESSRECORD SET PersonID=@pid, PersonName=@pname, AccessTime=@atime WHERE RecordID=@rid", conn);
+                    var cmd = new SqlCommand("UPDATE ACCESSRECORD SET PersonID=@pid, PersonName=@pname, AccessTime=@atime, AccessOnlyTime=@aotime WHERE RecordID=@rid", conn);
+                    cmd.Parameters.AddWithValue("@aotime", accessOnlyTime);
                     cmd.Parameters.AddWithValue("@pid", txtPersonID.Text);
                     cmd.Parameters.AddWithValue("@pname", txtPersonName.Text);
                     cmd.Parameters.AddWithValue("@atime", dpAccessTime.SelectedDate.Value);
@@ -251,9 +304,18 @@ namespace WpfApp1
             }
             return true;
         }
+        private void Button_Click_Graphics(object sender, RoutedEventArgs e)
+        {
+            // Example: pass all records from the DataGrid's DataSource
+            var dataView = dgRecords.ItemsSource as DataView;
+            DataTable table = dataView?.Table;
 
+            var graphicsWindow = new GraphicsWindow(table);
+            graphicsWindow.Show();
+        }
         private void ClearFields()
              {
+                 txtAccessOnlyTime.Text = "";
                  txtPersonID.Text = "";
                  txtPersonName.Text = "";
                  dpAccessTime.SelectedDate = null;
@@ -265,8 +327,12 @@ namespace WpfApp1
              {
 
              }
+        private void txtAccessOnlyTime_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            // Allow only numeric input and colon (for time format hh:mm)
+            e.Handled = !System.Text.RegularExpressions.Regex.IsMatch(e.Text, "^[0-9:]$");
+        }
 
-             
 
     }
 }

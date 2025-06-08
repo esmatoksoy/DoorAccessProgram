@@ -10,7 +10,6 @@
             <Setter Property="Background" Value="LightBlue" />
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="BorderBrush" Value="#6EC6FF"/>
-            <!-- Fixed missing attribute value -->
             <Setter Property="BorderThickness" Value="4"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Padding" Value="5,8"/>
@@ -32,13 +31,17 @@
         </Style>
     </Window.Resources>
     <Grid Margin="10" Background="#E3F2FD">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="129*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="73*"/>
             <RowDefinition Height="67*"/>
             <RowDefinition Height="274*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="0" Width="150" Grid.RowSpan="3">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="0,-26,0,26" Width="150" Grid.RowSpan="3" Grid.ColumnSpan="2">
             <TextBlock Text="Person ID:" Margin="0,20,0,0" FontSize="18" FontWeight="SemiBold" FontFamily="Source Sans Pro"/>
             <TextBox x:Name="txtPersonID" Margin="0,0,0,5" TextChanged="txtPersonID_TextChanged" PreviewTextInput="txtPersonID_PreviewTextInput"
    DataObject.Pasting="txtPersonID_Pasting"/>
@@ -46,16 +49,22 @@
             <TextBox x:Name="txtPersonName" Margin="0,0,0,5" PreviewTextInput="txtPersonName_PreviewTextInput"
              DataObject.Pasting="txtPersonName_Pasting"/>
             <TextBlock Text="Access Time:" FontSize="18" FontWeight="SemiBold" FontFamily="Source Sans Pro"/>
-            <DatePicker x:Name="dpAccessTime" Margin="0,0,0,15"/>
-            <StackPanel Orientation="Vertical" Margin="0,20,0,0" VerticalAlignment="Top" Width="100">
-                <Button Content="ADD" Margin="0,0,0,10" Click="Button_Click_Add"/>
-                <Button Content="UPDATE" Margin="0,0,0,10" Click="Button_Click_Update"/>
-                <Button Content="DELETE" Margin="0,0,0,10" Click="Button_Click_Delete"/>
-                <Button Content="LIST ALL" Margin="0,0,0,10" Click="Button_Click_List"/>
+            <DatePicker x:Name="dpAccessTime" Margin="0,10,0,5"/>
+            <TextBlock Text="Time (hh:mm):" FontSize="18" FontWeight="SemiBold"/>
+            <TextBox x:Name="txtAccessOnlyTime" Margin="0,0,30,5" Width="120" MaxLength="5
+                     " PreviewTextInput="txtAccessOnlyTime_PreviewTextInput"
+             DataObject.Pasting="txtAccessOnlyTime_Pasting"/>
+            <StackPanel Orientation="Vertical" Margin="0,10,0,0" VerticalAlignment="Top" Width="100">
+                <Button Content="ADD" Margin="0,0,0,5" Click="Button_Click_Add"/>
+                <Button Content="UPDATE" Margin="0,0,0,5" Click="Button_Click_Update"/>
+                <Button Content="DELETE" Margin="0,0,0,5" Click="Button_Click_Delete"/>
+                <Button Content="LIST ALL" Margin="0,0,0,5" Click="Button_Click_List"/>
                 <Button Content="SEARCH" Click="Button_Click_Search"/>
+                <Button Content="GRAPHICS" Width="90" Margin="5" Click="Button_Click_Graphics"/>
+
             </StackPanel>
         </StackPanel>
-        <DataGrid x:Name="dgRecords" Margin="160,0,0,0" AutoGenerateColumns="True"
-                 IsReadOnly="True" SelectionMode="Single" SelectionChanged="dgRecords_SelectionChanged" Grid.RowSpan="3"/>
+        <DataGrid x:Name="dgRecords" Margin="154,0,0,0" AutoGenerateColumns="True"
+                 IsReadOnly="True" SelectionMode="Single" SelectionChanged="dgRecords_SelectionChanged" Grid.RowSpan="3" Grid.Column="1"/>
     </Grid>
 </Window>
