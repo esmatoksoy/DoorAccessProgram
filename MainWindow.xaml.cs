@@ -304,15 +304,57 @@ namespace WpfApp1
             }
             return true;
         }
-private void Button_Click_Graphics(object sender, RoutedEventArgs e)
-{
-    // Example: pass all records from the DataGrid's DataSource
-    var dataView = dgRecords.ItemsSource as DataView;
-    DataTable table = dataView?.Table;
+        private void Button_Click_Graphics(object sender, RoutedEventArgs e)
+        {
+            var dataView = dgRecords.ItemsSource as DataView;
+            DataTable table = dataView?.Table;
+            if (table == null || table.Rows.Count == 0)
+            {
+                MessageBox.Show("No data to display.");
+                return;
+            }
 
-    var graphicsWindow = new GraphicsWindow(table);
-    graphicsWindow.Show();
-}
+            // Group by date and count entrances
+            var entranceCounts = table.AsEnumerable()
+                .GroupBy(row => Convert.ToDateTime(row["AccessTime"]).Date)
+                .Select(g => new
+                {
+                    Date = g.Key,
+                    Count = g.Count()
+                })
+                .OrderBy(x => x.Date)
+                .ToList();
+
+            var values = new LiveCharts.ChartValues<int>(entranceCounts.Select(x => x.Count));
+            var labels = entranceCounts.Select(x => x.Date.ToString("yyyy-MM-dd")).ToArray();
+
+            myChart.Series = new LiveCharts.SeriesCollection
+    {
+        new LiveCharts.Wpf.ColumnSeries
+        {
+            Title = "Entrances",
+            Values = values
+        }
+    };
+
+            myChart.AxisX.Clear();
+            myChart.AxisX.Add(new LiveCharts.Wpf.Axis
+            {
+                Title = "Date",
+                Labels = labels
+            });
+
+            myChart.AxisY.Clear();
+            myChart.AxisY.Add(new LiveCharts.Wpf.Axis
+            {
+                Title = "Count",
+                LabelFormatter = value => value.ToString("N1").Replace('.', ',')
+            });
+
+
+            myChart.Visibility = Visibility.Visible;
+        }
+
         private void ClearFields()
              {
                  txtAccessOnlyTime.Text = "";
