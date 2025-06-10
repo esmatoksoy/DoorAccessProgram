@@ -25,7 +25,72 @@ namespace WpfApp1
                 }
             };
             ListAll();
+            UpdateChart();
         }
+        private void UpdateChart()
+        {
+            var dataView = dgRecords.ItemsSource as DataView;
+            DataTable table = dataView?.Table;
+            if (table == null || table.Rows.Count == 0)
+            {
+                myChart.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            // Group by hour from AccessOnlyTime (assumed format: TimeSpan or "hh:mm")
+            var entranceCounts = table.AsEnumerable()
+                .Where(row => row["AccessOnlyTime"] != DBNull.Value)
+                .GroupBy(row =>
+                {
+                    // Handles both TimeSpan and string "hh:mm"
+                    var value = row["AccessOnlyTime"];
+                    int hour = 0;
+                    if (value is TimeSpan ts)
+                        hour = ts.Hours;
+                    else if (value is string s && TimeSpan.TryParse(s, out var parsed))
+                        hour = parsed.Hours;
+                    return hour;
+                })
+                .Select(g => new
+                {
+                    Hour = g.Key,
+                    Label = g.Key.ToString("D2"), // "09", "10", etc.
+                    Count = g.Count()
+                })
+                .OrderBy(x => x.Hour)
+                .ToList();
+
+            var values = new LiveCharts.ChartValues<int>(entranceCounts.Select(x => x.Count));
+            var labels = entranceCounts.Select(x => x.Label).ToArray();
+
+            myChart.Series = new LiveCharts.SeriesCollection
+    {
+        new LiveCharts.Wpf.ColumnSeries
+        {
+            Title = "Entrances",
+            Values = values
+        }
+    };
+
+            myChart.AxisX.Clear();
+            myChart.AxisX.Add(new LiveCharts.Wpf.Axis
+            {
+                Title = "Hour (AccessOnlyTime)",
+                Labels = labels
+            });
+
+            myChart.AxisY.Clear();
+            myChart.AxisY.Add(new LiveCharts.Wpf.Axis
+            {
+                Title = "Count",
+                LabelFormatter = value => value.ToString("N1").Replace('.', ',')
+            });
+
+            myChart.Visibility = Visibility.Visible;
+        }
+
+
+
         private static readonly Regex OnlyLetters = new Regex("^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$");
 
         private void txtPersonName_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -130,11 +195,11 @@ namespace WpfApp1
             }
             try
             {
-                // Random ID oluştur
+              
                 var random = new Random();
                 int recordId = random.Next(1, int.MaxValue);
 
-                // Bağlantı başlat
+              
                 using (var conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
@@ -171,7 +236,6 @@ namespace WpfApp1
 
             }
         }
-
 
         private void Button_Click_List(object sender, RoutedEventArgs e)
         {
@@ -304,56 +368,7 @@ namespace WpfApp1
             }
             return true;
         }
-        private void Button_Click_Graphics(object sender, RoutedEventArgs e)
-        {
-            var dataView = dgRecords.ItemsSource as DataView;
-            DataTable table = dataView?.Table;
-            if (table == null || table.Rows.Count == 0)
-            {
-                MessageBox.Show("No data to display.");
-                return;
-            }
-
-            // Group by date and count entrances
-            var entranceCounts = table.AsEnumerable()
-                .GroupBy(row => Convert.ToDateTime(row["AccessTime"]).Date)
-                .Select(g => new
-                {
-                    Date = g.Key,
-                    Count = g.Count()
-                })
-                .OrderBy(x => x.Date)
-                .ToList();
-
-            var values = new LiveCharts.ChartValues<int>(entranceCounts.Select(x => x.Count));
-            var labels = entranceCounts.Select(x => x.Date.ToString("yyyy-MM-dd")).ToArray();
-
-            myChart.Series = new LiveCharts.SeriesCollection
-    {
-        new LiveCharts.Wpf.ColumnSeries
-        {
-            Title = "Entrances",
-            Values = values
-        }
-    };
-
-            myChart.AxisX.Clear();
-            myChart.AxisX.Add(new LiveCharts.Wpf.Axis
-            {
-                Title = "Date",
-                Labels = labels
-            });
-
-            myChart.AxisY.Clear();
-            myChart.AxisY.Add(new LiveCharts.Wpf.Axis
-            {
-                Title = "Count",
-                LabelFormatter = value => value.ToString("N1").Replace('.', ',')
-            });
-
-
-            myChart.Visibility = Visibility.Visible;
-        }
+       
 
         private void ClearFields()
              {

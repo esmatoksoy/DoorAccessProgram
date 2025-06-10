@@ -85,7 +85,7 @@
                    Grid.ColumnSpan="3"/>
 
         <!-- Left Panel -->
-        <StackPanel Orientation="Vertical" Grid.Column="0" Background="#E3F2FD" Margin="0,20,0,0" Grid.ColumnSpan="2" Grid.RowSpan="2">
+        <StackPanel Orientation="Vertical" Grid.Column="0" Background="#E3F2FD" Margin="-5,20,0,0" Grid.ColumnSpan="2" Grid.RowSpan="2">
             <TextBlock Text="Person ID:" FontSize="16" FontFamily="Century Gothic"  FontWeight="SemiBold"/>
             <TextBox x:Name="txtPersonID" TextChanged="txtPersonID_TextChanged" PreviewTextInput="txtPersonID_PreviewTextInput" DataObject.Pasting="txtPersonID_Pasting"/>
             <TextBlock Text="Person Name:" FontSize="16" FontFamily="Century Gothic"  FontWeight="SemiBold" Margin="0,0,0,2"/>
@@ -100,7 +100,7 @@
                 <Button Content="DELETE" Click="Button_Click_Delete"/>
                 <Button Content="LIST ALL" Click="Button_Click_List"/>
                 <Button Content="SEARCH" Click="Button_Click_Search"/>
-                <Button Content="GRAPHICS"  Click="Button_Click_Graphics"/>
+                <!-- <Button Content="GRAPH"  Click="Button_Click_Graphics"/> -->
             </StackPanel>
         </StackPanel>
 
