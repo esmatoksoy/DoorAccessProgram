@@ -45,3 +45,5 @@ PersonID
 PersonName
 
 AccessTime
+
+![updatedWPF](https://github.com/user-attachments/assets/0f3ca288-9019-45bb-9d64-599f03569a94)
