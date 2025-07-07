@@ -2,7 +2,7 @@
 
 This WPF application allows managing door access records by storing person information and access times. Users can add, update, delete, list, and search access entries. The application provides a clean and user-friendly interface for easy management of door access logs.
 
-Features
+# Features
 Add new access records with Person ID, Name, and Access Time
 
 Update and delete existing records
@@ -15,7 +15,7 @@ Display all records in a read-only DataGrid for quick overview
 
 Intuitive UI with colored and styled buttons for better usability
 
-Technologies Used
+# Technologies Used
 C#
 
 WPF (Windows Presentation Foundation)
@@ -24,7 +24,7 @@ WPF (Windows Presentation Foundation)
 
 SQL Server (for storing access records)
 
-How to Use
+# How to Use
 Add a Record: Enter Person ID, Name, and select Access Date, then click "Add".
 
 Update a Record: Select a record from the list, modify the details, and click "Update".
@@ -35,7 +35,7 @@ List All Records: Click "List All" to refresh and display all records.
 
 Search Records: Enter Person ID and click "Search" to find specific entries.
 
-Database
+# Database
 The application connects to an SQL Server database named DoorScan. The main table used is [ACCESSRECORD], which stores:
 
 RecordID (Primary Key)
