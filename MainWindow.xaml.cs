@@ -1,17 +1,22 @@
 ﻿using System;
+// Yes, there are several problems in the code as described in your "Problem 1" to "Problem 5" list. 
+// Each is a nullable reference warning or error (CS8602, CS8600, CS8604, CS8625).
+// These should be fixed to ensure null safety and proper .NET 8/C# 12 compliance.
 using System.Data;
+using System.Data.SqlClient;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using Microsoft.Data.SqlClient;
-
+//missing packages for graphs
 
 namespace WpfApp1
 {
     public partial class MainWindow : Window
     {
-        string connectionString = "Server=DESKTOP-VE8VSKQ\\SQLEXPRESS01;Database=DoorScan;Trusted_Connection=True;TrustServerCertificate=True;";
+        string connectionString = "Server=localhost\\SQLEXPRESS01\r\n;Database=DoorScan;Trusted_Connection=True;TrustServerCertificate=True;";
         int selectedRecordId = -1;
 
         public MainWindow()
@@ -60,16 +65,18 @@ namespace WpfApp1
                 .OrderBy(x => x.Hour)
                 .ToList();
 
-            var values = new LiveCharts.ChartValues<int>(entranceCounts.Select(x => x.Count));
+            var values = new LiveCharts.ChartValues<int>(entranceCounts.Select(x => x.Count));//L,ve charts is missing
             var labels = entranceCounts.Select(x => x.Label).ToArray();
 
             myChart.Series = new LiveCharts.SeriesCollection
     {
-        new LiveCharts.Wpf.ColumnSeries
-        {
-            Title = "Entrances",
-            Values = values
-        }
+new LiveCharts.Wpf.ColumnSeries
+    {
+        Title = "Entrances",
+        Values = values,
+        Fill = new SolidColorBrush(Color.FromRgb(21, 154, 156)) // Example: teal color
+        // You can use Brushes.Green or any SolidColorBrush you like
+    }
     };
 
             myChart.AxisX.Clear();
@@ -89,9 +96,7 @@ namespace WpfApp1
             myChart.Visibility = Visibility.Visible;
         }
 
-
-
-        private static readonly Regex OnlyLetters = new Regex("^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$");
+        private static readonly Regex OnlyLetters = new Regex("^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$");//regex for chechkinfg if a name entered, nothing else
 
         private void txtPersonName_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
